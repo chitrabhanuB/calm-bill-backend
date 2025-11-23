@@ -82,5 +82,9 @@ await sendEmail(email, subject, text);
     res.status(500).json({ success: false, error: err.message });
   }
 });
+router.get("/test", (req, res) => {
+  res.json({ message: "Test working!" });
+});
+
 
 module.exports = router;
