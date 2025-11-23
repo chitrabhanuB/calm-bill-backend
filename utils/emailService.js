@@ -7,7 +7,7 @@ async function sendEmail(to, subject, text) {
       {
         sender: {
           name: "Payble Notifications",
-          email: "payble.notifications@gmail.com"
+          email: "bc825485@gmail.com"
         },
         to: [
           { email: to }
