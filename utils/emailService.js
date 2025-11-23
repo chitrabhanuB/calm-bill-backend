@@ -1,41 +1,25 @@
 // backend/utils/emailService.js
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-// 🔐 Create a reusable transporter using SMTP settings from .env
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,                      // e.g. smtp.gmail.com
-  port: Number(process.env.SMTP_PORT) || 587,       // 587 for TLS
-  secure: false,                                    // false for 587, true for 465
-  auth: {
-    user: process.env.SMTP_USER,                    // your sender email
-    pass: process.env.SMTP_PASS,                    // your app password
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * Simple helper to send an email
- * @param {string} to - recipient email
- * @param {string} subject
- * @param {string} text - plain text body
- */
 async function sendEmail(to, subject, text) {
-  if (!to) {
-    console.warn("sendEmail called without 'to' address");
-    return;
-  }
-
-  const mailOptions = {
-    from: process.env.SMTP_USER,
-    to,
-    subject,
-    text,
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("📧 Email sent:", info.messageId);
-  } catch (err) {
-    console.error("❌ Error sending email:", err);
+    // Convert plain text to HTML
+    const html = text.replace(/\n/g, "<br>");
+
+    const result = await resend.emails.send({
+      from: "Payble Notifications <onboarding@resend.dev>",
+      to,
+      subject,
+      html,
+    });
+
+    console.log(`📧 Resend email sent to ${to}`);
+    return result;
+  } catch (error) {
+    console.error("❌ Resend API error:", error);
+    throw error;
   }
 }
 

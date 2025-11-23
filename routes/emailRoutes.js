@@ -7,10 +7,6 @@ const { sendEmail } = require("../utils/emailService");
 // 🔔 POST /api/emails/send-due-reminders
 router.post("/send-due-reminders", async (req, res) => {
   try {
-    // For demo: look up reminders that are unpaid,
-    // have a user_email, and are due within the next N days.
-    // If daysAhead not provided, default to 30 so your current
-    // "blanket" reminder is included.
     const daysAhead =
       typeof req.body.daysAhead === "number" ? req.body.daysAhead : 30;
 
@@ -24,10 +20,6 @@ router.post("/send-due-reminders", async (req, res) => {
     const targetDate = new Date(startOfToday);
     targetDate.setDate(startOfToday.getDate() + daysAhead);
 
-    // ✅ For demo: only reminders that:
-    //   - are unpaid
-    //   - have user_email filled
-    //   - due_date between today and targetDate
     const reminders = await Reminder.find({
       is_paid: false,
       user_email: { $exists: true, $ne: null },
@@ -35,7 +27,7 @@ router.post("/send-due-reminders", async (req, res) => {
     });
 
     console.log(
-      `📨 Found ${reminders.length} due/overdue reminders in range [${startOfToday.toISOString()} - ${targetDate.toISOString()}]`
+      `📨 Found ${reminders.length} reminders in range [${startOfToday.toISOString()} - ${targetDate.toISOString()}]`
     );
 
     if (reminders.length === 0) {
@@ -46,15 +38,10 @@ router.post("/send-due-reminders", async (req, res) => {
 
     for (const reminder of reminders) {
       const email = reminder.user_email;
-
-      if (!email) {
-        console.warn(
-          `⚠️ Reminder ${reminder._id.toString()} has no user_email; skipping`
-        );
-        continue;
-      }
+      if (!email) continue;
 
       const subject = `Reminder: ${reminder.bill_name} is due soon`;
+
       const text = `Hi! 👋
 
 This is a reminder from Payble.
@@ -79,11 +66,11 @@ Team Payble`;
       try {
         await sendEmail(email, subject, text);
         console.log(
-          `✅ Reminder email SENT to ${email} for bill "${reminder.bill_name}"`
+          `✅ Reminder email sent to ${email} for "${reminder.bill_name}"`
         );
         sentCount++;
-      } catch (e) {
-        console.error(`❌ Failed to send email to ${email}`, e);
+      } catch (err) {
+        console.error(`❌ Failed to send to ${email}`, err);
       }
     }
 

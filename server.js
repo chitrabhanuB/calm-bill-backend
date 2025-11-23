@@ -101,7 +101,7 @@ app.use("/api/emails", emailRoutes);
 // ✅ Test email route (for manual testing)
 app.get('/test-email', async (req, res) => {
   try {
-    const to = "amisha.v0901@gmail.com";
+    const to = "1by23cb011@bmsit.in";
     await sendEmail(
       to,
       "Test from Payble",
