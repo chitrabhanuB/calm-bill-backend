@@ -61,11 +61,17 @@ app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), (re
 
 // ✅ Middlewares
 app.use(cors({
-  origin: "http://localhost:8080", // Match Vite dev server port from vite.config.ts
+  origin: [
+    "http://localhost:8080",
+    "http://localhost:5173",
+    "https://calm-bill-frontend.vercel.app",
+    "https://calm-bill-frontend-33dca4wwy-chitrabhanubs-projects.vercel.app"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
