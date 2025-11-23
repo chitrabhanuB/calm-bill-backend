@@ -233,7 +233,7 @@ Thank you!
   }
 });
 
-// ✅ DEMO: mark reminder as paid + send success email (no Razorpay required)
+// ✅ DEMO: mark reminder as paid + send success email no razorpay required 
 app.post("/api/payments/demo-success", async (req, res) => {
   try {
     const { reminderId, userEmail, billName, amount } = req.body;
