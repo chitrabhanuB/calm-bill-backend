@@ -1,30 +1,29 @@
 // backend/utils/emailService.js
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: true, // Important for Gmail (port 465)
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 async function sendEmail(to, subject, text) {
   try {
-    const html = text.replace(/\n/g, "<br>");
-
-    const response = await resend.emails.send({
-      from: "Payble Notifications <onboarding@resend.dev>",
+    const info = await transporter.sendMail({
+      from: `"Payble Notifications" <${process.env.SMTP_USER}>`,
       to,
       subject,
-      html,
+      text,
     });
 
-    console.log("📧 Resend API Response:", JSON.stringify(response, null, 2));
-
-    if (response.error) {
-      console.error("❌ Resend API Error:", response.error);
-    } else {
-      console.log(`✅ Email accepted by Resend for: ${to}`);
-    }
-
-    return response;
+    console.log("📧 SMTP Email sent:", info.messageId);
+    return info;
   } catch (error) {
-    console.error("❌ Resend EXCEPTION:", error?.response?.data || error);
+    console.error("❌ SMTP Error:", error);
     throw error;
   }
 }
