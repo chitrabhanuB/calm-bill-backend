@@ -303,7 +303,7 @@ mongoose.connect(process.env.MONGO_URI, {
         const res = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ daysAhead: 0 }), // 0 = due today (for demo)
+          body: JSON.stringify({ daysAhead: 7}), // 0 = due today (for demo)
         });
 
         const data = await res.json().catch(() => null);
