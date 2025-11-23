@@ -62,15 +62,20 @@ app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), (re
 // ✅ Middlewares
 app.use(cors({
   origin: [
-    "http://localhost:8080",
     "http://localhost:5173",
-    "https://calm-bill-frontend.vercel.app",
-    "https://calm-bill-frontend-33dca4wwy-chitrabhanubs-projects.vercel.app"
+    "http://localhost:8080",
+
+    // Your production domain
+    "https://calm-bill-frontend-x1ah.vercel.app",
+
+    // Your current Vercel preview deployment
+    "https://calm-bill-frontend-x1ah-mq46lqogx-chitrabhanubs-projects.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
