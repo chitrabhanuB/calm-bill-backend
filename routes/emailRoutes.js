@@ -64,7 +64,9 @@ Thanks,
 Team Payble`;
 
       try {
-        await sendEmail(email, subject, text);
+        await new Promise(resolve => setTimeout(resolve, 700)); // 0.7 sec delay
+await sendEmail(email, subject, text);
+
         console.log(
           `✅ Reminder email sent to ${email} for "${reminder.bill_name}"`
         );
