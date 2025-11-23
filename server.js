@@ -269,7 +269,7 @@ mongoose.connect(process.env.MONGO_URI, {
     cron.schedule("*/30 * * * * *", async () => {
       console.log("⏰ CRON TRIGGERED");
 
-      const url = `http://localhost:${PORT}/api/emails/send-due-reminders`;
+      const url = `${process.env.BASE_URL}/api/emails/send-due-reminders`;
       console.log("   Calling =>", url);
 
       try {
