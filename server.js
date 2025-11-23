@@ -202,12 +202,28 @@ app.post('/api/payments/verify', async (req, res) => {
     console.log("🔥 UPDATED REMINDER:", updated);
 
     if (userEmail) {
-      const subject = "Payment successful";
-      const text = `Your payment for "${billName || updated?.bill_name || "your bill"}"${
-        amount ?? updated?.amount ? ` of ₹${amount ?? updated?.amount}` : ""
-      } was successful. Thank you!`;
-      sendEmail(userEmail, subject, text);
-    }
+  const finalBillName = billName || updated?.bill_name || "your bill";
+  const finalAmount = amount != null ? amount : updated?.amount;
+
+  const subject = "Payment successful";
+
+  const text = `Hi,
+
+Your payment for "${finalBillName}"${
+    finalAmount != null ? ` of ₹${finalAmount}` : ""
+  } was successful.
+
+Thank you!
+- Payble Team`;
+
+  try {
+    await sendEmail(userEmail, subject, text);
+    console.log("📧 Payment success email SENT to:", userEmail);
+  } catch (e) {
+    console.error("❌ Failed to send payment success email:", e);
+  }
+}
+
 
     return res.json({ success: true, validated: true, updated });
 
