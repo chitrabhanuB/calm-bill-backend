@@ -61,16 +61,18 @@ app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), (re
 
 // ✅ Middlewares
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:8080",
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
 
-    // Your production domain
-    "https://calm-bill-frontend-x1ah.vercel.app",
+    if (
+      origin.includes("vercel.app") ||
+      origin.includes("localhost")
+    ) {
+      return callback(null, true);
+    }
 
-    // Your current Vercel preview deployment
-    "https://calm-bill-frontend-x1ah-mq46lqogx-chitrabhanubs-projects.vercel.app"
-  ],
+    return callback(new Error("Not allowed by CORS"));
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
