@@ -295,7 +295,7 @@ mongoose.connect(process.env.MONGO_URI, {
     // 🔔 Start CRON only AFTER Mongo is connected
     console.log("⏰ Starting cron job (every 30 seconds for demo)");
 
-    cron.schedule("*/30 * * * * *", async () => {
+    cron.schedule("0 9 * * *",async () => {
       console.log("⏰ CRON TRIGGERED");
 
       const url = `${process.env.BASE_URL}/api/emails/send-due-reminders`;
