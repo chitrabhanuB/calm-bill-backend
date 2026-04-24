@@ -249,37 +249,45 @@ app.post('/api/payments/verify', async (req, res) => {
 // ✅ Mongo connect
 const PORT = process.env.PORT || 5001;
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('✅ MongoDB connected successfully');
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(async () => {
+    console.log("✅ MongoDB connected successfully");
 
-  app.listen(PORT, () =>
-    console.log(`🚀 Server running on port ${PORT}`)
-  );
+    const cols = await mongoose.connection.db
+      .listCollections()
+      .toArray();
 
-  // ✅ Cron fixed daily 9 AM
-  cron.schedule("0 9 * * *", async () => {
-    console.log("⏰ CRON TRIGGERED");
+    console.log("Collections:", cols);
 
-    const url =
-      `${process.env.BASE_URL}/api/emails/send-due-reminders`;
+    const count = await Reminder.countDocuments();
+    console.log("Reminder count:", count);
 
-    try {
-      await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ daysAhead: 7 })
-      });
-    } catch (err) {
-      console.error(err);
-    }
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+    cron.schedule("0 9 * * *", async () => {
+      console.log("⏰ CRON TRIGGERED");
+
+      const url = `${process.env.BASE_URL}/api/emails/send-due-reminders`;
+
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ daysAhead: 7 }),
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
   });
-})
-.catch(err => {
-  console.error('❌ MongoDB connection error:', err);
-});
